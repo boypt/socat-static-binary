@@ -21,7 +21,7 @@ function build_ncurses() {
     cd /build
 
     # Download
-    curl -LO ftp://invisible-island.net/ncurses/ncurses-${NCURSES_VERSION}.tar.gz
+    curl -LO https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz
     tar zxvf ncurses-${NCURSES_VERSION}.tar.gz
     cd ncurses-${NCURSES_VERSION}
 
@@ -35,7 +35,7 @@ function build_readline() {
     cd /build
 
     # Download
-    curl -LO ftp://ftp.cwru.edu/pub/bash/readline-${READLINE_VERSION}.tar.gz
+    curl -LO https://ftp.gnu.org/gnu/readline/readline-${READLINE_VERSION}.tar.gz
     tar xzvf readline-${READLINE_VERSION}.tar.gz
     cd readline-${READLINE_VERSION}
     ln -s /build/readline-${READLINE_VERSION} /build/readline
@@ -57,7 +57,7 @@ function build_openssl() {
     cd openssl-${OPENSSL_VERSION}
 
     # Configure
-    CC='/usr/local/musl/bin/musl-gcc -static' \
+    CC='/usr/local/musl/bin/musl-gcc -static -idirafter /usr/include/ -idirafter /usr/include/x86_64-linux-gnu/' \
         CFLAGS='-fPIC' \
         ./Configure no-shared linux-x86_64
 
@@ -77,7 +77,7 @@ function build_socat() {
     # Build
     # NOTE: `NETDB_INTERNAL` is non-POSIX, and thus not defined by MUSL.
     # We define it this way manually.
-    CC='/usr/local/musl/bin/musl-gcc -static' \
+    CC='/usr/local/musl/bin/musl-gcc -static -idirafter /usr/include/ -idirafter /usr/include/x86_64-linux-gnu/' \
         CFLAGS="-fPIC -DWITH_OPENSSL -I/build -I/build/openssl-${OPENSSL_VERSION}/include -I/build/readline-${READLINE_VERSION} -DNETDB_INTERNAL=-1" \
         CPPFLAGS="-DWITH_OPENSSL -I/build -I/build/openssl-${OPENSSL_VERSION}/include -I/build/readline -DNETDB_INTERNAL=-1" \
         LDFLAGS="-L/build/readline -L/build/ncurses-${NCURSES_VERSION}/lib -L/build/openssl-${OPENSSL_VERSION}" \
